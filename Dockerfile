@@ -5,6 +5,7 @@ FROM python:3.7
 # to the terminal without buffering it first
 ENV PYTHONUNBUFFERED 1
 
+# copy requirements of the base image to the base folder
 COPY ./ ./base
 WORKDIR ./base
 

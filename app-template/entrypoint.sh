@@ -6,44 +6,42 @@
 # are not empty, user defined envrionment variables are passed in to start
 # the runtime
 #
-
-# set default module name and variable name
-PY_APP_MODULE_NAME = "server"
-PY_APP_VARIABLE_NAME = "app"
-
 if [ -z "${PY_APP_MODULE_NAME}" ]
 then
+   # set the default moudle name as server
+   PY_APP_MODULE_NAME="server"
+
    # python app module is not defined, we will try to discover it from the source
    result=`find . -type f -name 'wsgi.py'`
-   
-   if [ -z ${result} ] 
+
+   if [ -z ${result} ]
    then
       # cannot find wsgi.py, default app module name as 'server' and varaible name as 'app'
-      echo "It is not a django web app, use the default model/varailbe ${PY_APP_MODULE_NAME}, ${PY_APP_VARIABLE_NAME}" 
+      echo "It is not a django web app, use 'server' as the model name and the variable name passed from the env variable ${PY_APP_VARIABLE_NAME}"
    else
       echo "WSGI module name path ${result}"
       hasmanager=`find . -type f -name 'manage.py'`
       if [ -z "${hasmanager}" ]
-      then 
+      then
         # set variable name as "app"
-        echo "It is not a django web app, but possibly other WSGI app, use the default model/varailbe ${PY_APP_MODULE_NAME}, ${PY_APP_VARIABLE_NAME}"
+        echo "It is not a django web app, but possibly other WSGI app, use it sent from the environment for the model/varailbe ${PY_APP_MODULE_NAME}, ${PY_APP_VARIABLE_NAME}"
       else
-        counts=`echo ${result} |grep -o "/" |wc -l` 
-        modulePackage=`echo "${result}" |cut -d/ -f2` 
-        echo "django package name ${modulePackage}"     
+        counts=`echo ${result} |grep -o "/" |wc -l`
+        modulePackage=`echo "${result}" |cut -d/ -f2`
+        echo "django package name ${modulePackage}"
         echo "django discover module package name ${modulePackage}.wsdl, and variable name application for Dijango."
         PY_APP_MODULE_NAME="${modulePackage}.wsgi"
         PY_APP_VARIABLE_NAME="application"
       fi
-   fi  
+   fi
 else
    # got app module name from environment variable
    # we use the defined environment variable to load both module_name and varaible name
-   echo "Python app module name ${PY_APP_MODULE_NAME} is found. " 
+   echo "Python app module name ${PY_APP_MODULE_NAME} is found. "
    if [ -z "${PY_APP_VARIABLE_NAME}" ]
    then
-       echo "Python app module ${PY_APP_MODULE_NAME} has no variable name defined. Set the default as 'application'"
-       PY_APP_VARIABLE_NAME = "application"
+       echo "Python app module ${PY_APP_MODULE_NAME} has no variable name defined. Set the default as 'app'"
+       PY_APP_VARIABLE_NAME = "app"
    fi
 fi
 echo "PY_APP_MODULE_NAME=${PY_APP_MODULE_NAME}"
